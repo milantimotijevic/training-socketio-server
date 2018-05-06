@@ -1,0 +1,15 @@
+<html>
+<head>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+        socket.on('message', function(data) {
+            document.getElementById('message-element').innerHTML = data;
+        });
+    </script>
+</head>
+
+<body>
+<p id="message-element">Hello!</p>
+</body>
+</html>
