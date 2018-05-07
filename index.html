@@ -1,26 +1,45 @@
 <html>
 <head>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+
     <script>
-        var socket = io();
-        socket.on('tweet', function(data) {
+        var socket;
+        var loginToken;
 
-        });
+        function login() {
+            var senderName = document.getElementById('username').value;
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:8080/login",
+                json: { name: senderName }
+            })
+                .done(function( msg ) {
+                    loginToken = msg;
+                    console.log('fetched login token: ' + loginToken);
+                    establishSocketConnection();
+                });
+        }
 
-        socket.on('update tweets', function(data) {
-            updateTweets(data);
-        });
+        function establishSocketConnection() {
+           socket = io('', {query: 'token=' + loginToken});
+           socket.on('update tweets', function(data) {
+                updateTweets(data);
+            });
+        }
+
 
         function sendTweet() {
             var text = document.getElementById('tweets-input').value;
-            socket.emit('send tweet', text);
+            var senderName = document.getElementById('username').value;
+            socket.emit('send tweet', senderName + ": " + text);
         }
 
         function updateTweets(data) {
             var tweetsDiv = document.getElementById('tweets-element');
-            var senderName = document.getElementById('username').value;
             var tweetParagraph = document.createElement("p");
-            var tweetText = document.createTextNode(senderName + ": " + data);
+            var tweetText = document.createTextNode(data);
             tweetParagraph.appendChild(tweetText);
             tweetsDiv.appendChild(tweetParagraph);
         }
@@ -32,6 +51,7 @@
 <div id="tweets-element"></div>
 <input id="tweets-input" type="text" />
 <button id="tweets-button" onclick="sendTweet()">Tweet</button><br>
-<input id="username" type="text" />
+<input id="username" type="text" /><br>
+<button id="login" onclick="login()">Login</button>
 </body>
 </html>
