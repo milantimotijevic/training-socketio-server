@@ -3,13 +3,35 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         var socket = io();
-        socket.on('message', function(data) {
-            document.getElementById('message-element').innerHTML = data;
+        socket.on('tweet', function(data) {
+
         });
+
+        socket.on('update tweets', function(data) {
+            updateTweets(data);
+        });
+
+        function sendTweet() {
+            var text = document.getElementById('tweets-input').value;
+            socket.emit('send tweet', text);
+        }
+
+        function updateTweets(data) {
+            var tweetsDiv = document.getElementById('tweets-element');
+            var senderName = document.getElementById('username').value;
+            var tweetParagraph = document.createElement("p");
+            var tweetText = document.createTextNode(senderName + ": " + data);
+            tweetParagraph.appendChild(tweetText);
+            tweetsDiv.appendChild(tweetParagraph);
+        }
+
     </script>
 </head>
 
 <body>
-<p id="message-element">Hello!</p>
+<div id="tweets-element"></div>
+<input id="tweets-input" type="text" />
+<button id="tweets-button" onclick="sendTweet()">Tweet</button><br>
+<input id="username" type="text" />
 </body>
 </html>

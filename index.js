@@ -8,7 +8,10 @@ app.get('/', function(req, res){
 
 io.on('connection', function(socket) {
     console.log('Connection established');
-    socket.emit('message', 'welcome, mortal!');
+
+    socket.on('send tweet', function(data) {
+        io.emit('update tweets', data);
+    });
 });
 
 server.listen('3000');
